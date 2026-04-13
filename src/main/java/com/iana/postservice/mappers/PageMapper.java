@@ -21,6 +21,7 @@ public interface PageMapper {
     Page toPage(PageCreateDto dto);
 
     @Mapping(target = "parentPageId", source = "parentPage.id")
+    @Mapping(target = "createdAt", source = "createdAt")
     PageDto toPageDto(Page page);
 
     @Mapping(target = "parentPageId", source = "parentPage.id")

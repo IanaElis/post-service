@@ -8,6 +8,7 @@ import com.iana.postservice.entities.enums.PostStatus;
 import com.iana.postservice.services.PostService;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
+import jakarta.json.JsonNumber;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
@@ -31,7 +32,7 @@ public class PostController {
     private final int POSTS_PER_PAGE = 20;
 
     private long userId(){
-        Long claim = jwt.getClaim("userid");
+        JsonNumber claim = jwt.getClaim("userid");
 
         if (claim == null) {
             throw new NotAuthorizedException("Invalid token claims");
@@ -50,7 +51,7 @@ public class PostController {
     @Path("/drafts/{id}")
     public Response deleteDraft(@PathParam("id") Integer id) {
         postService.deleteDraft(id, userId());
-        return Response.seeOther(URI.create("posts/my-posts")).build();
+        return Response.seeOther(URI.create("posts/me/posts")).build();
     }
 
     @POST
@@ -63,7 +64,7 @@ public class PostController {
     @Path("/{id}")
     public Response deletePost(@PathParam("id") Integer id) {
         postService.deletePostByUser(id, userId());
-        return Response.seeOther(URI.create("/posts/my-posts")).build();
+        return Response.seeOther(URI.create("/posts/me/posts")).build();
     }
 
     @GET

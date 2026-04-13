@@ -1,7 +1,8 @@
 package com.iana.postservice.mappers;
 
 import com.iana.postservice.dtos.post.request.PostRequestDto;
-import com.iana.postservice.dtos.post.response.ModerationPostsDto;
+import com.iana.postservice.dtos.post.response.AdminPostDto;
+import com.iana.postservice.dtos.post.response.ModerationPostDto;
 import com.iana.postservice.dtos.post.response.PostLightResponseDto;
 import com.iana.postservice.dtos.post.response.PostResponseDto;
 import com.iana.postservice.entities.Post;
@@ -31,6 +32,7 @@ public interface PostMapper {
 
     @Mapping(target = "pageId", source = "page.id")
     @Mapping(target = "pageTitle", source = "page.title")
+    @Mapping(target = "contentText", source = "contentText")
     @Mapping(target = "timestamp", expression = "java(resolveTimestamp(post))")
     PostLightResponseDto toPostLightResponseDto(Post post);
     List<PostLightResponseDto> toPostLightResponseDtoList(List<Post> posts);
@@ -39,8 +41,17 @@ public interface PostMapper {
     @Mapping(target = "pageTitle", source = "page.title")
     @Mapping(target = "createdAt", source = "post.createdAt")
     @Mapping(target = "media", source = "mediaList")
-    ModerationPostsDto toModerationPostsDto(Post post);
-    List<ModerationPostsDto> toModerationPostsDtoList(List<Post> posts);
+    AdminPostDto toAdminPostDto(Post post);
+    List<AdminPostDto> toAdminPostDtoList(List<Post> posts);
+
+    @Mapping(target = "type", constant = "post")
+    @Mapping(target = "pageId", source = "page.id")
+    @Mapping(target = "pageTitle", source = "page.title")
+    @Mapping(target = "author.userId", source = "post.authorId")
+    @Mapping(target = "author.username", source = "post.username")
+    @Mapping(target = "createdAt", source = "post.createdAt")
+    @Mapping(target = "media", source = "mediaList")
+    ModerationPostDto toModerationPostDto(Post post);
 
     default Instant resolveTimestamp(Post post) {
         return (post.getStatus() == PostStatus.APPROVED)

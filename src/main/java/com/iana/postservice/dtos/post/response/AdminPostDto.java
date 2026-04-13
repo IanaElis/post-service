@@ -5,7 +5,7 @@ import com.iana.postservice.entities.enums.PostStatus;
 import java.time.Instant;
 import java.util.List;
 
-public record ModerationPostsDto(
+public record AdminPostDto(
         int id,
         int pageId,
         String pageTitle,
@@ -13,6 +13,7 @@ public record ModerationPostsDto(
         PostStatus status,
         String contentText,
         Instant createdAt,
+        Instant publishedAt,
         List<Integer> media
 ) {
 }

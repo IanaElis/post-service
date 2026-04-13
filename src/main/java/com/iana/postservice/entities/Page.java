@@ -47,13 +47,11 @@ public class Page{
 
     public Page(){}
 
-    public Page(String title, String description, PageType pageType, Page parentPage,
-                int departmentId, int followersCount) {
+    public Page(String title, String description, PageType pageType, Page parentPage, int followersCount) {
         this.title = title;
         this.description = description;
         this.pageType = pageType;
         this.parentPage = parentPage;
-        this.departmentId = departmentId;
         this.followersCount = followersCount;
     }
 
@@ -95,14 +93,6 @@ public class Page{
 
     public void setParentPage(Page parentPage) {
         this.parentPage = parentPage;
-    }
-
-    public Integer getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
     }
 
     public int getFollowersCount() {

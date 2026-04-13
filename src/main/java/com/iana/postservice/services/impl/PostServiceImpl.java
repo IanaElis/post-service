@@ -1,11 +1,12 @@
 package com.iana.postservice.services.impl;
 
+import com.iana.postservice.controllers.ModerationServiceClient;
 import com.iana.postservice.dtos.PageResult;
 import com.iana.postservice.dtos.SliceResult;
 import com.iana.postservice.dtos.post.ModerationDecisionDto;
 import com.iana.postservice.dtos.post.UserDto;
 import com.iana.postservice.dtos.post.request.PostRequestDto;
-import com.iana.postservice.dtos.post.response.ModerationPostsDto;
+import com.iana.postservice.dtos.post.response.AdminPostDto;
 import com.iana.postservice.dtos.post.response.PostLightResponseDto;
 import com.iana.postservice.dtos.post.response.PostResponseDto;
 import com.iana.postservice.entities.*;
@@ -20,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 import java.time.Instant;
 import java.util.List;
@@ -35,6 +37,8 @@ public class PostServiceImpl implements PostService {
     PostMapper postMapper;
     @Inject
     PostMediaMapper postMediaMapper;
+    @Inject
+    ModerationServiceClient moderationServiceClient;
 
 
     @Transactional
@@ -43,10 +47,6 @@ public class PostServiceImpl implements PostService {
                                        int departmentId, UserDto user) {
         Page page = pageRepository.findByIdOptional((long) pageId)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
-
-//        if(!isPostingAllowed(page, departmentId)) {
-//            throw new ForbiddenException("You are not allowed to write a post on this page");
-//        }
 
         Post post = new Post(page, user.getUserId(), user.getUsername(),
                 PostStatus.DRAFT, dto.contentText());
@@ -124,7 +124,13 @@ public class PostServiceImpl implements PostService {
         }
 
         post.setStatus(PostStatus.PENDING);
-        //ToDo: send notification to ModerationService and user, send the whole post
+
+//       Response response = moderationServiceClient.sendPost(postMapper.toModerationPostDto(post));
+//
+//       if (response.getStatus() >= 300) {
+//           throw new RuntimeException("Post was not submitted.");
+//       }
+        //ToDo: send notification to ModerationService and user
         return postMapper.toPostResponseDto(post);
     }
 
@@ -191,9 +197,6 @@ public class PostServiceImpl implements PostService {
         Post post = findById(postId);
         assertAuthor(post, authorId);
         postRepository.delete(post);
-//        if (!deleted) {
-//            throw new NotFoundException("Post with id" + postId +"not found");
-//        }
     }
 
     //no need?
@@ -208,8 +211,8 @@ public class PostServiceImpl implements PostService {
 
     //admin only
     @Override
-    public PageResult<ModerationPostsDto> getAllPosts(PostStatus status, Integer pageId,
-                                               int page, int size) {
+    public PageResult<AdminPostDto> getAllPosts(PostStatus status, Integer pageId,
+                                                int page, int size) {
         if(status == PostStatus.DRAFT){
             throw new ForbiddenException("You are not authorized to view users' drafts");
         }
@@ -217,7 +220,7 @@ public class PostServiceImpl implements PostService {
         if(retrieved.content().isEmpty()){
             throw new NotFoundException("No posts found");
         }
-        List<ModerationPostsDto> dtoList = postMapper.toModerationPostsDtoList(retrieved.content());
+        List<AdminPostDto> dtoList = postMapper.toAdminPostDtoList(retrieved.content());
         return new PageResult<>(
                 dtoList,
                 retrieved.pageNumber(),
@@ -231,10 +234,6 @@ public class PostServiceImpl implements PostService {
         if(!post.getAuthorId().equals(userId)) {
             throw new ForbiddenException("You are not authorized to do this operation");
         }
-    }
-
-    private boolean isPostingAllowed(Page page, Integer departmentId){
-        return page.getDepartmentId().equals(departmentId);
     }
 
     private PageResult<Post> processFilter(PostStatus status, Integer pageId, int page, int size) {

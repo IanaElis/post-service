@@ -5,7 +5,7 @@ import com.iana.postservice.dtos.SliceResult;
 import com.iana.postservice.dtos.post.ModerationDecisionDto;
 import com.iana.postservice.dtos.post.UserDto;
 import com.iana.postservice.dtos.post.request.PostRequestDto;
-import com.iana.postservice.dtos.post.response.ModerationPostsDto;
+import com.iana.postservice.dtos.post.response.AdminPostDto;
 import com.iana.postservice.dtos.post.response.PostLightResponseDto;
 import com.iana.postservice.dtos.post.response.PostResponseDto;
 import com.iana.postservice.entities.enums.PostStatus;
@@ -31,5 +31,5 @@ public interface PostService {
     void applyModeration(ModerationDecisionDto dto);
     void deletePostByUser(Integer postId, Long authorId);
     void deletePost(Integer postId);
-    PageResult<ModerationPostsDto> getAllPosts(PostStatus status, Integer pageId, int page, int size);
+    PageResult<AdminPostDto> getAllPosts(PostStatus status, Integer pageId, int page, int size);
 }

@@ -4,6 +4,7 @@ import com.iana.postservice.dtos.page.response.PageDetailsDto;
 import com.iana.postservice.services.PageService;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
+import jakarta.json.JsonNumber;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -21,7 +22,7 @@ public class PageController {
     JsonWebToken jwt;
 
     private long userId(){
-        Long claim = jwt.getClaim("userid");
+        JsonNumber claim = jwt.getClaim("userid");
 
         if (claim == null) {
             throw new NotAuthorizedException("Invalid token claims");

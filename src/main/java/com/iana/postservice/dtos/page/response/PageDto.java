@@ -52,6 +52,10 @@ public class PageDto {
         this.followersCount = followersCount;
     }
 
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }

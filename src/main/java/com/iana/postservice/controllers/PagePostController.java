@@ -15,6 +15,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.net.URI;
+
 @Path("/pages/{pageId}/posts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -28,7 +30,7 @@ public class PagePostController {
 
     private UserDto currentUser(){
         String username = jwt.getSubject();
-        Long claim = jwt.getClaim("userid");
+        Object claim = jwt.getClaim("userid");
 
         if (username == null || claim == null) {
             throw new NotAuthorizedException("Invalid token claims");
@@ -44,8 +46,8 @@ public class PagePostController {
         //TODO: fetch departmentId from userService
         PostResponseDto created = postService.createDraft(pageId, postCreateDto,
                 1, currentUser());
-        return Response.status(Response.Status.CREATED).entity(created).build();
-        //or seeOther(URI.create("posts/" + created.getId())).build();
+        //return Response.status(Response.Status.CREATED).entity(created).build();
+        return Response.seeOther(URI.create("posts/" + created.getId())).build();
     }
 
     @POST

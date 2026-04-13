@@ -2,7 +2,7 @@ package com.iana.postservice.controllers;
 
 import com.iana.postservice.dtos.PageResult;
 import com.iana.postservice.dtos.post.ModerationDecisionDto;
-import com.iana.postservice.dtos.post.response.ModerationPostsDto;
+import com.iana.postservice.dtos.post.response.AdminPostDto;
 import com.iana.postservice.entities.enums.PostStatus;
 import com.iana.postservice.services.PostService;
 import jakarta.annotation.security.RolesAllowed;
@@ -31,9 +31,9 @@ public class PostModerationController {
 
     @GET
     @RolesAllowed("ADMIN")
-    public PageResult<ModerationPostsDto> getAllPosts(@QueryParam("status") PostStatus status,
-                                                      @QueryParam("id") Integer pageId,
-                                                      @QueryParam("page") @DefaultValue("0") int page) {
+    public PageResult<AdminPostDto> getAllPosts(@QueryParam("status") PostStatus status,
+                                                @QueryParam("id") Integer pageId,
+                                                @QueryParam("page") @DefaultValue("0") int page) {
         return postService.getAllPosts(status, pageId, page, POSTS_PER_PAGE);
     }
 
