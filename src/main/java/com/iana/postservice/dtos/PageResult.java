@@ -1,4 +1,4 @@
 package com.iana.postservice.dtos;
 
-public class Pagination {
+public record PageResult() {
 }
