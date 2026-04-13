@@ -1,11 +1,11 @@
 package com.iana.postservice.dtos.post;
 
-public class AuthorDto{
+public class UserDto {
     private Long userId;
     private String username;
 
-    public AuthorDto(){}
-    public AuthorDto(Long userId, String username) {
+    public UserDto(){}
+    public UserDto(Long userId, String username) {
         this.userId = userId;
         this.username = username;
     }

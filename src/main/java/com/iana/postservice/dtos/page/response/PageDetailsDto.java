@@ -1,12 +1,13 @@
-package com.iana.postservice.dtos.page;
+package com.iana.postservice.dtos.page.response;
 
-import com.iana.postservice.entities.PageType;
+import com.iana.postservice.entities.enums.PageType;
 
-public class PageDetailsDto {
-    Integer id;
-    String title;
-    String description;
-    PageType pageType;
-    Integer parentPageId;
-    int followersCount;
-}
+public record PageDetailsDto(
+        int id,
+        String title,
+        String description,
+        PageType pageType,
+        Integer parentPageId,
+        Integer departmentId,
+        int followersCount
+) {}

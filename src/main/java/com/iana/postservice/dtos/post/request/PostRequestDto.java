@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record PostCreateDto (
+public record PostRequestDto(
     @NotBlank
     String contentText,
     List<Integer> mediaIds

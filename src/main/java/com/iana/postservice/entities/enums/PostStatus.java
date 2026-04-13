@@ -1,5 +1,5 @@
-package com.iana.postservice.entities;
+package com.iana.postservice.entities.enums;
 
 public enum PostStatus {
-    DRAFT, PENDING, APPROVED, REJECTED, DELETE_REQUESTED, DELETED;
+    DRAFT, PENDING, APPROVED, REJECTED;
 }

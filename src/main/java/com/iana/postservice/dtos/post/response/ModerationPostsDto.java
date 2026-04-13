@@ -1,20 +1,18 @@
 package com.iana.postservice.dtos.post.response;
 
-import com.iana.postservice.dtos.post.AuthorDto;
-import com.iana.postservice.dtos.post.MediaDto;
-import com.iana.postservice.dtos.post.PostModerationInfoDto;
-import com.iana.postservice.entities.PostStatus;
+import com.iana.postservice.entities.enums.PostStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
-public record ModerationViewDto(
-        Integer id,
-        Integer pageId,
-        AuthorDto author,
+public record ModerationPostsDto(
+        int id,
+        int pageId,
+        String pageTitle,
+        Long authorId,
         PostStatus status,
         String contentText,
-        LocalDateTime createdAt,
-        List<MediaDto> media
+        Instant createdAt,
+        List<Integer> media
 ) {
 }

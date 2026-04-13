@@ -1,4 +1,4 @@
-package com.iana.postservice.services;
+package com.iana.postservice.services.impl;
 
 import com.iana.postservice.dtos.page.request.PageCreateDto;
 import com.iana.postservice.dtos.page.request.PageUpdateDto;
@@ -7,10 +7,11 @@ import com.iana.postservice.dtos.page.response.PageLightDto;
 import com.iana.postservice.dtos.page.response.PageDto;
 import com.iana.postservice.entities.Follower;
 import com.iana.postservice.entities.Page;
-import com.iana.postservice.entities.PageType;
+import com.iana.postservice.entities.enums.PageType;
 import com.iana.postservice.mappers.PageMapper;
 import com.iana.postservice.repositories.FollowerRepository;
 import com.iana.postservice.repositories.PageRepository;
+import com.iana.postservice.services.PageService;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -112,7 +113,7 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public List<PageDto> getAllPagesList() {
-        List<Page> pages = pageRepository.listAll(Sort.descending("createdAt"));
+        List<Page> pages = pageRepository.listAll(Sort.descending("time"));
         return pageMapper.toPageDtoList(pages);
     }
 

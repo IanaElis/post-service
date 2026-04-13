@@ -1,4 +1,6 @@
 package com.iana.postservice.dtos.post;
 
-public class ModerationDesicionDto {
-}
+public record ModerationDecisionDto (
+    Integer postId,
+    boolean approved
+){}

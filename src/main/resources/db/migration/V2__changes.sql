@@ -9,17 +9,10 @@ CREATE INDEX idx_page_followers_page_id ON page_followers(page_id);
 CREATE INDEX idx_posts_complex ON posts(page_id, status, created_at DESC);
 CREATE INDEX idx_posts_idAuthor ON posts(id, author_id);
 
-CREATE TABLE posts_moderation_info(
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    post_id INT REFERENCES posts(id) NOT NULL,
-    moderated_by BIGINT NOT NULL,
-    comment VARCHAR(500),
-    altered_at TIMESTAMP
-);
-
 ALTER TABLE post_media DROP COLUMN media_url;
 ALTER TABLE post_media DROP COLUMN file_size;
 ALTER TABLE post_media DROP COLUMN media_type;
 ALTER TABLE post_media ADD COLUMN media_id INT;
 ALTER TABLE posts ALTER COLUMN status TYPE VARCHAR(255);
 ALTER TABLE posts ADD COLUMN username VARCHAR(255);
+

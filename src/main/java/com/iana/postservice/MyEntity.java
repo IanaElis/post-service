@@ -1,4 +1,4 @@
-package org.example;
+package com.iana.postservice;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ import jakarta.persistence.Entity;
  * }
  * }
  */
-@Entity
-public class MyEntity extends PanacheEntity {
-    public String field;
-}
+//@Entity
+//public class MyEntity extends PanacheEntity {
+//    public String field;
+//}
