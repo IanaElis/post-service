@@ -10,10 +10,11 @@ import com.iana.postservice.dtos.post.response.PostLightResponseDto;
 import com.iana.postservice.dtos.post.response.PostResponseDto;
 import com.iana.postservice.entities.enums.PostStatus;
 
+import java.time.Instant;
+
 
 public interface PostService {
-    PostResponseDto createDraft(Integer pageId, PostRequestDto dto,
-                                int departmentId, UserDto user);
+    PostResponseDto createDraft(Integer pageId, PostRequestDto dto, UserDto user);
     PostResponseDto createPost(Integer pageId, PostRequestDto dto, UserDto user);
     PostResponseDto updateDraft(Integer postId, PostRequestDto dto, long userId);
     void deleteDraft(Integer postId, long authorId);
@@ -21,7 +22,7 @@ public interface PostService {
 //    void requestDelete(Integer postId, long authorId);
     PageResult<PostLightResponseDto> getMyPosts(long authorId, Integer pageId,
                                                 PostStatus status,  int page, int size);
-    SliceResult<PostResponseDto> getPagePosts(Integer pageId, int page, int size);
+    SliceResult<PostResponseDto> getPagePosts(Integer pageId, Instant cursor, int size);
     PostResponseDto getPost(Integer postId, long authorId);
 
 

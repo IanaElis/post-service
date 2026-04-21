@@ -1,6 +1,8 @@
 package com.iana.postservice.controllers;
 
 import com.iana.postservice.dtos.page.response.PageDetailsDto;
+import com.iana.postservice.dtos.page.response.PageFollowedDto;
+import com.iana.postservice.dtos.page.response.PageLightDto;
 import com.iana.postservice.services.PageService;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
@@ -10,11 +12,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.util.List;
+
 
 @Path("/pages")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
+//@Authenticated
 public class PageController {
     @Inject
     PageService pageService;
@@ -49,6 +53,12 @@ public class PageController {
     @Path("/{pageId}")
     public PageDetailsDto getPage(@PathParam("pageId") Integer pageId) {
         return pageService.getPageInfo(pageId);
+    }
+
+    @GET
+    @Path("/followed")
+    public List<PageFollowedDto> followedPages() {
+        return pageService.getPagesUserFollows(userId());
     }
 
 

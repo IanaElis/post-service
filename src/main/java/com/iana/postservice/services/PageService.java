@@ -2,6 +2,7 @@ package com.iana.postservice.services;
 
 import com.iana.postservice.dtos.page.request.PageCreateDto;
 import com.iana.postservice.dtos.page.response.PageDetailsDto;
+import com.iana.postservice.dtos.page.response.PageFollowedDto;
 import com.iana.postservice.dtos.page.response.PageLightDto;
 import com.iana.postservice.dtos.page.response.PageDto;
 import com.iana.postservice.dtos.page.request.PageUpdateDto;
@@ -23,5 +24,6 @@ public interface PageService {
     PageDetailsDto updatePage(Integer pageId, PageUpdateDto dto);
     void deletePage(Integer pageId);
     List<PageDto> getAllPagesList();
+    List<PageFollowedDto> getPagesUserFollows(Long userId);
 
 }

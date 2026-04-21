@@ -1,18 +1,21 @@
 package com.iana.postservice.repositories;
 
 import com.iana.postservice.entities.Follower;
-import com.iana.postservice.entities.Page;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class FollowerRepository implements PanacheRepository<Follower> {
     // find by user id: return all pages to which this user is subscribed
-    public List<Follower> findByUserId(Long userId) {
-        return find("userId", userId).list();
+    public Set<Integer> findByUserId(Long userId) {
+        return find("select f.page.id from Follower f where f.userId = ?1", userId)
+                .project(Integer.class)
+                .stream()
+                .collect(Collectors.toSet());
     }
     // find by page: return all users that follow this page
     public List<Follower> findByPage(Integer pageId){

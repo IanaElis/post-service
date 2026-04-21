@@ -32,9 +32,6 @@ public class Page{
     @JoinColumn(name = "parent_page_id")
     private Page parentPage;
 
-    @Column(name = "department_id", nullable = false)
-    private Integer departmentId; // кафедра
-
     @Column(name = "followers_count", nullable = false)
     private int followersCount;
 
@@ -57,6 +54,10 @@ public class Page{
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -119,9 +120,9 @@ public class Page{
                 ", description='" + description + '\'' +
                 ", pageType=" + pageType +
                 ", parentPage=" + parentPage +
-                ", departmentId=" + departmentId +
                 ", followersCount=" + followersCount +
                 ", time=" + createdAt +
                 '}';
     }
+
 }

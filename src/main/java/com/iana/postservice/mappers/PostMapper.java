@@ -44,11 +44,10 @@ public interface PostMapper {
     AdminPostDto toAdminPostDto(Post post);
     List<AdminPostDto> toAdminPostDtoList(List<Post> posts);
 
-    @Mapping(target = "type", constant = "post")
     @Mapping(target = "pageId", source = "page.id")
     @Mapping(target = "pageTitle", source = "page.title")
-    @Mapping(target = "author.userId", source = "post.authorId")
-    @Mapping(target = "author.username", source = "post.username")
+    @Mapping(target = "user.userId", source = "post.authorId")
+    @Mapping(target = "user.username", source = "post.username")
     @Mapping(target = "createdAt", source = "post.createdAt")
     @Mapping(target = "media", source = "mediaList")
     ModerationPostDto toModerationPostDto(Post post);

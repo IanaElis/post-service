@@ -3,6 +3,7 @@ package com.iana.postservice.services.impl;
 import com.iana.postservice.dtos.page.request.PageCreateDto;
 import com.iana.postservice.dtos.page.request.PageUpdateDto;
 import com.iana.postservice.dtos.page.response.PageDetailsDto;
+import com.iana.postservice.dtos.page.response.PageFollowedDto;
 import com.iana.postservice.dtos.page.response.PageLightDto;
 import com.iana.postservice.dtos.page.response.PageDto;
 import com.iana.postservice.entities.Follower;
@@ -19,7 +20,10 @@ import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class PageServiceImpl implements PageService {
@@ -66,15 +70,15 @@ public class PageServiceImpl implements PageService {
     public PageDetailsDto createPage(PageCreateDto dto) {
         Page page = pageMapper.toPage(dto);
 
-        if(dto.getPageType() == PageType.FACULTY){
+        if(dto.pageType() == PageType.FACULTY){
             page.setParentPage(null);
         }
-        else if(dto.getPageType() == PageType.DEPARTMENT){
-            if(dto.getParentPageId() == null){
+        else if(dto.pageType() == PageType.DEPARTMENT){
+            if(dto.parentPageId() == null){
                 throw new IllegalArgumentException("Parent page id is null");
             }
 
-            Page parentPage = pageRepository.findByIdOptional((long)dto.getParentPageId())
+            Page parentPage = pageRepository.findByIdOptional((long)dto.parentPageId())
                     .orElseThrow(() -> new NotFoundException("Parent page not found"));
 
             if (parentPage.getPageType() != PageType.FACULTY) {
@@ -83,7 +87,7 @@ public class PageServiceImpl implements PageService {
 
             page.setParentPage(parentPage);
         } else {
-            throw new IllegalArgumentException("Unsupported page type: " + dto.getPageType());
+            throw new IllegalArgumentException("Unsupported page type: " + dto.pageType());
         }
 
         page.setFollowersCount(0);
@@ -95,10 +99,10 @@ public class PageServiceImpl implements PageService {
     @Override
     public PageDetailsDto updatePage(Integer pageId, PageUpdateDto dto) {
         Page page = findById(pageId);
-        if(dto.getTitle() != null && !dto.getTitle().equals(page.getTitle())){
-             page.setTitle(dto.getTitle());
+        if(dto.title() != null && !dto.title().equals(page.getTitle())){
+             page.setTitle(dto.title());
         }
-        page.setDescription(dto.getDescription());
+        page.setDescription(dto.description());
         return pageMapper.toPageDetailsDto(page);
     }
 
@@ -137,6 +141,19 @@ public class PageServiceImpl implements PageService {
         return followers.stream().map(Follower::getUserId).toList();
     }
 
+    @Override
+    public List<PageFollowedDto> getPagesUserFollows(Long userId){
+        Set<Integer> followedPageIds = followerRepository.findByUserId(userId);
+        List<Page> pages = pageRepository.listAll();
+        return pages.stream()
+                .map(p -> new PageFollowedDto(
+                        p.getId(),
+                        p.getTitle(),
+                        followedPageIds.contains(p.getId())
+                )).sorted(Comparator.comparing(PageFollowedDto::isFollowed).reversed()
+                        .thenComparing(PageFollowedDto::title)).toList();
+    }
+
     private Page findByIdLocked(Integer pageId) throws NotFoundException {
         return pageRepository.findByIdOptional((long) pageId, LockModeType.PESSIMISTIC_WRITE)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
@@ -146,11 +163,5 @@ public class PageServiceImpl implements PageService {
         return pageRepository.findByIdOptional((long) pageId)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
     }
-
-    public int getFollowerCount(Page page){
-        return (int) followerRepository.followerCount(page.getId());
-    }
-
-    //ToDo:     // getPagesUserFollows(Long userId)
 
 }

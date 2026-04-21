@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.net.URI;
+import java.time.Instant;
 
 @Path("/pages/{pageId}/posts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,7 +27,7 @@ public class PagePostController {
     PostService postService;
     @Inject
     JsonWebToken jwt;
-    private static final int POSTS_PER_PAGE = 20;
+    private final static int POSTS_PER_PAGE = 20;
 
     private UserDto currentUser(){
         String username = jwt.getSubject();
@@ -44,8 +45,7 @@ public class PagePostController {
     public Response createDraft(@PathParam("pageId") Integer pageId,
                                 @Valid @NotNull PostRequestDto postCreateDto) {
         //TODO: fetch departmentId from userService
-        PostResponseDto created = postService.createDraft(pageId, postCreateDto,
-                1, currentUser());
+        PostResponseDto created = postService.createDraft(pageId, postCreateDto, currentUser());
         //return Response.status(Response.Status.CREATED).entity(created).build();
         return Response.seeOther(URI.create("posts/" + created.getId())).build();
     }
@@ -60,8 +60,8 @@ public class PagePostController {
 
     @GET
     public Response getPagePosts(@PathParam("pageId") Integer pageId,
-                                 @QueryParam("page") @DefaultValue("0") int page) {
-        SliceResult<PostResponseDto> result = postService.getPagePosts(pageId, page, POSTS_PER_PAGE);
+                                 @QueryParam("cursor") Instant cursor) {
+        SliceResult<PostResponseDto> result = postService.getPagePosts(pageId, cursor, POSTS_PER_PAGE);
         return Response.status(Response.Status.OK).entity(result).build();
     }
 }

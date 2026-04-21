@@ -8,6 +8,6 @@ public record PageDetailsDto(
         String description,
         PageType pageType,
         Integer parentPageId,
-        Integer departmentId,
+//        Integer departmentId,
         int followersCount
 ) {}

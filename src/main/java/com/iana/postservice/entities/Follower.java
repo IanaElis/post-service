@@ -26,4 +26,7 @@ public class Follower {
     public Long getUserId() {
         return userId;
     }
+    public Page getPage() {
+        return page;
+    }
 }

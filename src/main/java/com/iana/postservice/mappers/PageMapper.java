@@ -3,6 +3,7 @@ package com.iana.postservice.mappers;
 import com.iana.postservice.dtos.page.request.PageCreateDto;
 import com.iana.postservice.dtos.page.response.PageDetailsDto;
 import com.iana.postservice.dtos.page.response.PageDto;
+import com.iana.postservice.dtos.page.response.PageFollowedDto;
 import com.iana.postservice.dtos.page.response.PageLightDto;
 import com.iana.postservice.entities.Page;
 import org.mapstruct.*;

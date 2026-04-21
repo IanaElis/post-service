@@ -7,6 +7,7 @@ import com.iana.postservice.dtos.post.ModerationDecisionDto;
 import com.iana.postservice.dtos.post.UserDto;
 import com.iana.postservice.dtos.post.request.PostRequestDto;
 import com.iana.postservice.dtos.post.response.AdminPostDto;
+import com.iana.postservice.dtos.post.response.ModerationRequestDto;
 import com.iana.postservice.dtos.post.response.PostLightResponseDto;
 import com.iana.postservice.dtos.post.response.PostResponseDto;
 import com.iana.postservice.entities.*;
@@ -15,6 +16,7 @@ import com.iana.postservice.mappers.PostMapper;
 import com.iana.postservice.mappers.PostMediaMapper;
 import com.iana.postservice.repositories.PageRepository;
 import com.iana.postservice.repositories.PostRepository;
+import com.iana.postservice.services.PageService;
 import com.iana.postservice.services.PostService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,21 +36,22 @@ public class PostServiceImpl implements PostService {
     @Inject
     PageRepository pageRepository;
     @Inject
+    PageService pageService;
+    @Inject
     PostMapper postMapper;
     @Inject
     PostMediaMapper postMediaMapper;
-    @Inject
-    ModerationServiceClient moderationServiceClient;
+//    @Inject
+//    ModerationServiceClient moderationServiceClient;
 
 
     @Transactional
     @Override
-    public PostResponseDto createDraft(Integer pageId, PostRequestDto dto,
-                                       int departmentId, UserDto user) {
+    public PostResponseDto createDraft(Integer pageId, PostRequestDto dto, UserDto user) {
         Page page = pageRepository.findByIdOptional((long) pageId)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
 
-        Post post = new Post(page, user.getUserId(), user.getUsername(),
+        Post post = new Post(page, user.userId(), user.username(),
                 PostStatus.DRAFT, dto.contentText());
         List<PostMedia> mediaList = dto.mediaIds().stream()
                 .map(m -> postMediaMapper.toEntity(m,post)).toList();
@@ -58,14 +61,14 @@ public class PostServiceImpl implements PostService {
         return postMapper.toPostResponseDto(post);
     }
 
-    //for admin and moderators
+    //for admin
     @Transactional
     @Override
     public PostResponseDto createPost(Integer pageId, PostRequestDto dto, UserDto user) {
         Page page = pageRepository.findByIdOptional((long) pageId)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
 
-        Post post = new Post(page, user.getUserId(), user.getUsername(),
+        Post post = new Post(page, user.userId(), user.username(),
                 PostStatus.APPROVED, dto.contentText());
         post.setPublishedAt(Instant.now());
 
@@ -125,12 +128,12 @@ public class PostServiceImpl implements PostService {
 
         post.setStatus(PostStatus.PENDING);
 
-//       Response response = moderationServiceClient.sendPost(postMapper.toModerationPostDto(post));
+//       Response response = moderationServiceClient.moderationRequestPost(
+//               new ModerationRequestDto("POST", postMapper.toModerationPostDto(post)));
 //
 //       if (response.getStatus() >= 300) {
 //           throw new RuntimeException("Post was not submitted.");
 //       }
-        //ToDo: send notification to ModerationService and user
         return postMapper.toPostResponseDto(post);
     }
 
@@ -154,14 +157,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public SliceResult<PostResponseDto> getPagePosts(Integer pageId, int page,int size) {
+    public SliceResult<PostResponseDto> getPagePosts(Integer pageId, Instant cursor,int size) {
         SliceResult<Post> approvedPosts = postRepository.
-                findByPageAndStatusPaginated(PostStatus.APPROVED, pageId, page, size);
+                findByPageAndStatusPaginated(PostStatus.APPROVED, pageId, cursor, size);
         List<PostResponseDto> dtoList = postMapper.toPostDtoList(approvedPosts.content());
 
         return new SliceResult<>(
                 dtoList,
-                approvedPosts.pageNumber(),
+                approvedPosts.cursor(),
                 approvedPosts.hasNext()
         );
     }
@@ -184,8 +187,12 @@ public class PostServiceImpl implements PostService {
         if(dto.approved()){
             post.setStatus(PostStatus.APPROVED);
             post.setPublishedAt(Instant.now());
-            //ToDo: send notification  to followers
-        }else {
+
+            List<Long> followerIds = pageService.getFollowers(post.getPage().getId());
+            for(Long followerId : followerIds){
+                //ToDo: send notification  to followers
+            }
+        }else{
             post.setStatus(PostStatus.REJECTED);
         }
         //ToDo: send notification  to author

@@ -11,6 +11,7 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.time.Instant;
 import java.util.*;
 
 @ApplicationScoped
@@ -81,10 +82,20 @@ public class PostRepository implements PanacheRepository<Post> {
 
     //find all posts of certain status by page
     public SliceResult<Post> findByPageAndStatusPaginated(PostStatus status, Integer pageId,
-                                                 int pageNumber, int postsByPage) {
-        PanacheQuery<Post> panacheQuery = find("status = ?1 and page.id = ?2 order by publishedAt desc", status, pageId);
+                                                          Instant cursor, int postsByPage) {
+        PanacheQuery<Post> panacheQuery;
+
+        if (cursor == null) {
+            panacheQuery = find("status = ?1 and page.id = ?2 order by publishedAt desc",
+                    status, pageId);
+        } else {
+            // next pages
+            panacheQuery = find("status = ?1 and page.id = ?2 and publishedAt < ?3 order by publishedAt desc",
+                    status, pageId, cursor);
+        }
+     //   PanacheQuery<Post> panacheQuery = find("status = ?1 and page.id = ?2 order by publishedAt desc", status, pageId);
         List<Post> results = panacheQuery
-                .page(Page.of(pageNumber, postsByPage + 1))
+                .page(Page.ofSize(postsByPage + 1))
                 .list();
 
         boolean hasNext = results.size() > postsByPage;
@@ -92,7 +103,12 @@ public class PostRepository implements PanacheRepository<Post> {
         if (hasNext) {
             results = results.subList(0, postsByPage);
         }
-        return new SliceResult<>(results, pageNumber, hasNext);
+
+        if (!results.isEmpty()) {
+            Post last = results.getLast();
+            cursor = last.getPublishedAt();
+        }
+        return new SliceResult<>(results, cursor, hasNext);
     }
 
     public PageResult<Post> findByPageAndStatus(PostStatus status, Integer pageId,
