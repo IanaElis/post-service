@@ -149,12 +149,13 @@ public class PageServiceImpl implements PageService {
                 .map(p -> new PageFollowedDto(
                         p.getId(),
                         p.getTitle(),
+                        p.getPageType(),
                         followedPageIds.contains(p.getId())
                 )).sorted(Comparator.comparing(PageFollowedDto::isFollowed).reversed()
                         .thenComparing(PageFollowedDto::title)).toList();
     }
 
-    private Page findByIdLocked(Integer pageId) throws NotFoundException {
+    public Page findByIdLocked(Integer pageId) throws NotFoundException {
         return pageRepository.findByIdOptional((long) pageId, LockModeType.PESSIMISTIC_WRITE)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
     }

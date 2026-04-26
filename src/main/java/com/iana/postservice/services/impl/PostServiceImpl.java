@@ -85,7 +85,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public PostResponseDto updateDraft(Integer postId, PostRequestDto dto, long userId) {
-        Post post =findById(postId);
+        Post post = findById(postId);
 
         assertAuthor(post, userId);
         if(isEditable(post)){
@@ -99,6 +99,8 @@ public class PostServiceImpl implements PostService {
                 post.getMediaList().clear();
                 post.getMediaList().addAll(mediaList);
             }
+
+            post.setStatus(PostStatus.DRAFT);
         }
         return postMapper.toPostResponseDto(post);
     }
@@ -237,13 +239,13 @@ public class PostServiceImpl implements PostService {
         );
     }
 
-    private void assertAuthor(Post post, Long userId){
+    public void assertAuthor(Post post, Long userId){
         if(!post.getAuthorId().equals(userId)) {
             throw new ForbiddenException("You are not authorized to do this operation");
         }
     }
 
-    private PageResult<Post> processFilter(PostStatus status, Integer pageId, int page, int size) {
+    public PageResult<Post> processFilter(PostStatus status, Integer pageId, int page, int size) {
         PageResult<Post> posts;
         if(status == null && pageId == null) {
             posts = postRepository.getAllPaginated(page, size);
@@ -265,7 +267,7 @@ public class PostServiceImpl implements PostService {
         return post.getStatus() == PostStatus.DRAFT || post.getStatus() == PostStatus.REJECTED;
     }
 
-    private Post findById(Integer postId) throws NotFoundException {
+    public Post findById(Integer postId) throws NotFoundException {
         return postRepository.findByIdOptional((long) postId)
                 .orElseThrow(() -> new NotFoundException("Page not found"));
     }

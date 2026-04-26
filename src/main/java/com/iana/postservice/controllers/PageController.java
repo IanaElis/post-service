@@ -61,10 +61,6 @@ public class PageController {
         return pageService.getPagesUserFollows(userId());
     }
 
-
-
-
-    //get pages user follows
     // get users following page?
 
 }
